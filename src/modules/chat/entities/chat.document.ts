@@ -12,7 +12,7 @@ export class ChatDocument extends AbstractSchema {
     name: string
 
     @Prop([MessageDocument])
-    message: MessageDocument[]
+    messages: MessageDocument[]
 }
 
 export const ChatSchema = SchemaFactory.createForClass(ChatDocument);
