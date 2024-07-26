@@ -31,7 +31,7 @@ export class ChatService {
     // find chats
     async findMany(
         prePipelineStages: PipelineStage[] = [],
-        paginationDto?: PaginationDto
+        paginationDto: PaginationDto = { skip: 0, limit: 10 }
     ) {
         const chats = await this.chatRepository.model.aggregate([
             ...prePipelineStages,
@@ -56,7 +56,7 @@ export class ChatService {
 
             // remove messages as it can get very large and consume a lot of memory
             { $unset: 'messages' },
-
+            // $lookup operator is used to perform a left outer join to another collection in the same database to filter in documents from the "joined" collection for processing.
             {
                 $lookup: {
                     from: 'users',
@@ -86,7 +86,7 @@ export class ChatService {
     // find chat
     async findOne(_id: string) {
         const chats = await this.findMany([
-            { $match: { chatId: new Types.ObjectId(_id) } },
+            { $match: { _id: new Types.ObjectId(_id) } },
         ]);
         if (!chats[0]) {
             throw new NotFoundException(`No chat was found with ID ${_id}`);

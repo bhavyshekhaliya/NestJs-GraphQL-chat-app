@@ -8,13 +8,13 @@ export class Message extends AbstractSchema {
     
     @Field(() => String)
     content: string
+
+    @Field(() => DateScalar)
+    createdAt: Date
     
     @Field(() => User)
     user: User
 
     @Field()
     chatId: string
-
-    @Field(() => DateScalar)
-    createdAt: Date
 }

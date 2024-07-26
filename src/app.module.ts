@@ -14,6 +14,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { ChatModule } from './modules/chat/chat.module';
 import { MessageModule } from './modules/chat/message/message.module';
 import { PubSubModule } from './common/pubSub/pubSub.module';
+import { DateScalar } from './common/scalars/date.scalars';
 
 @Module({
   imports: [
@@ -49,7 +50,14 @@ import { PubSubModule } from './common/pubSub/pubSub.module';
          playground: configService.getOrThrow<boolean>('GRAPHQL_PLAYGROUND'),
          introspection: configService.getOrThrow<string>('NODE_ENV') !== 'production',
          context: ({ req, resp }) => ({ req, resp}),
-         csrfPrevention: true,  
+        //  csrfPrevention: true,  
+         subscriptions: {
+            'graphql-ws': {
+              onConnect: () => {
+                console.log("Web Socket Connected.....");                
+              }
+            }
+         }
       }),
       imports: [ ConfigModule ], 
       inject: [ ConfigService ],
@@ -99,7 +107,8 @@ import { PubSubModule } from './common/pubSub/pubSub.module';
     AppController
   ],
   providers: [
-    AppService
+    AppService,
+    DateScalar
   ],
 })
 export class AppModule {}
