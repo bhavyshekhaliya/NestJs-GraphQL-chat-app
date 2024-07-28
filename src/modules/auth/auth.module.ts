@@ -20,6 +20,7 @@ import { JwtService } from '@nestjs/jwt';
         RtGuard,
         AtStrategy,
         RtStrategy
-    ]
+    ],
+    exports: [ AuthService ]
 })
 export class AuthModule {}

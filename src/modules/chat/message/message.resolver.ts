@@ -33,17 +33,7 @@ export class MessageResolver {
     }
 
     // subscription for realtime listening
-    @Subscription(() => Message, {
-        // This is the filter that will be used to determine if the client should be notified
-        filter: (payload, variables: MessageCreatedDto, context) => {
-            const userId = context.req.user._id;
-            const message: Message = payload.messageCreated;
-            return (
-                variables.chatIds.includes(message.chatId) &&
-                userId !== message.user._id.toHexString()
-            );
-        },
-    })
+    @Subscription(() => Message)
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     async messageCreated(@Args() messageCreatedArgs: MessageCreatedDto) {
         return this.messageService.messageCreated();

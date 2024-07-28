@@ -3,7 +3,6 @@ import { DatabaseModule } from './common/database/database.module';
 import { UserModule } from './modules/user/user.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import * as Joi from 'joi';
-import { MongooseModule } from '@nestjs/mongoose';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { join } from 'path';
@@ -18,7 +17,6 @@ import { DateScalar } from './common/scalars/date.scalars';
 
 @Module({
   imports: [
-
     /// Configration setup
     ConfigModule.forRoot({
       cache: true,
@@ -26,50 +24,34 @@ import { DateScalar } from './common/scalars/date.scalars';
       isGlobal: true,
       validationSchema: Joi.object({
         NODE_ENV: Joi.string()
-          .valid('development','production')
+          .valid('development', 'production')
           .default('development'),
-        PORT: Joi.number().port().default(3000),  
+        PORT: Joi.number().port().default(3000),
         MONGODB_URI: Joi.string().required(),
         GRAPHQL_PLAYGROUND: Joi.boolean().required(),
         AT_SECRET: Joi.string().required(),
-        RT_SECRET: Joi.string().required(), 
+        RT_SECRET: Joi.string().required(),
         THROTTLE_TTL: Joi.number(),
         THROTTLE_LIMIT: Joi.number(),
-      }),
-      validationOptions: {
-        allowUnknown: true,
-        abortEarly: true
-      }
-    }), 
+      })
+    }),
 
     /// Graphql setup
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      useFactory: async (configService: ConfigService) => ({
-         autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
-         playground: configService.getOrThrow<boolean>('GRAPHQL_PLAYGROUND'),
-         introspection: configService.getOrThrow<string>('NODE_ENV') !== 'production',
-         context: ({ req, resp }) => ({ req, resp}),
-        //  csrfPrevention: true,  
-         subscriptions: {
-            'graphql-ws': {
-              onConnect: () => {
-                console.log("Web Socket Connected.....");                
-              }
-            }
-         }
+      useFactory: (configService: ConfigService) => ({
+        autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+        playground: configService.getOrThrow<boolean>('GRAPHQL_PLAYGROUND'),
+        introspection: configService.getOrThrow<string>('NODE_ENV') !== 'production',
+        context: ({ req, res }) => ({ req, res }),
+        csrfPrevention: true,
+        subscriptions: {
+          'subscriptions-transport-ws': true,
+          'graphql-ws': true
+        }
       }),
-      imports: [ ConfigModule ], 
-      inject: [ ConfigService ],
-    }),
-
-    /// MongoDB setUp
-    MongooseModule.forRootAsync({
-      useFactory: async (configService: ConfigService) => ({        
-        uri: configService.get<string>('MONGODB_URI'),
-      }),
-      imports: [ ConfigModule ],
-      inject: [ ConfigService ],
+      imports: [],
+      inject: [ConfigService],
     }),
 
     /// Logger setUp
@@ -83,11 +65,11 @@ import { DateScalar } from './common/scalars/date.scalars';
             transport: isProduction
               ? undefined
               : {
-                  target: 'pino-pretty',
-                  options: {
-                    singleLine: true,
-                  },
+                target: 'pino-pretty',
+                options: {
+                  singleLine: true,
                 },
+              },
             // debug might be too verbose for production
             level: isProduction ? 'info' : 'debug',
           },
@@ -111,4 +93,4 @@ import { DateScalar } from './common/scalars/date.scalars';
     DateScalar
   ],
 })
-export class AppModule {}
+export class AppModule { }

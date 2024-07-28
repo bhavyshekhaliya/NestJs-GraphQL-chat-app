@@ -10,6 +10,7 @@
     "sourceMap": true,
     "outDir": "./dist",
     "baseUrl": "./",
+    // "lib": ["ESNext.AsyncIterable", "DOM"],
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": false,

@@ -7,6 +7,7 @@ import { ConfigService } from '@nestjs/config';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
 
+  // this helps to log the request and response details
   app.useLogger(app.get(Logger));
 
   // for the class-validator and class-transformer
@@ -16,12 +17,12 @@ async function bootstrap() {
       transform: true, // This enables class-transformer
       transformOptions: {
         enableImplicitConversion: true, // This allows class-transformer to convert types implicitly
-      }, 
+      },
     })
   )
 
   const configService = app.get(ConfigService);
-  
+
   await app.listen(configService.getOrThrow('PORT'));
 }
 bootstrap();

@@ -4,7 +4,7 @@ import { AbstractSchema } from "src/common/database/abstract.schema";
 @Schema({ versionKey: false, timestamps: true })
 export class UserDocument extends AbstractSchema {
 
-    @Prop()
+    @Prop({ unique: true })
     email: string
 
     @Prop()
