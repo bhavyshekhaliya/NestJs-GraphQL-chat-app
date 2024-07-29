@@ -31,8 +31,6 @@ import { DateScalar } from './common/scalars/date.scalars';
         GRAPHQL_PLAYGROUND: Joi.boolean().required(),
         AT_SECRET: Joi.string().required(),
         RT_SECRET: Joi.string().required(),
-        THROTTLE_TTL: Joi.number(),
-        THROTTLE_LIMIT: Joi.number(),
       })
     }),
 
