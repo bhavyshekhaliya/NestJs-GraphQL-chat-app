@@ -1,4 +1,4 @@
-import { ForbiddenException, Injectable, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException, UnauthorizedException, UnprocessableEntityException } from '@nestjs/common';
 import { UserRepository } from '../user/user.repository';
 import { hashData } from 'src/common/common';
 import { User } from '../user/entities/user.entity';
@@ -19,6 +19,11 @@ export class AuthService {
     // create a new user ( SignUp )
     async createUser(email: string, password: string): Promise<User> {
         try {
+            const user = await this.userRepository.findOne({ email: email });
+            if(user) {
+                throw new ForbiddenException("User with this email already exists");
+            }
+
             const newUser = await this.userRepository.create({
                 email,
                 password: await hashData(password)
@@ -47,6 +52,11 @@ export class AuthService {
     // login the user ( SignIn )
     async login(email: string, password: string) {
         try {
+            const checkUser = await this.userRepository.findOne({ email: email });
+            if(!checkUser) {
+                throw new NotFoundException("User with this email Not exists");
+            }
+
             const user = await this.verifyUser(email, password);
 
             const token = await this.getTokens(user._id.toString(), user.email);

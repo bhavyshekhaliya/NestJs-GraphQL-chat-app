@@ -8,5 +8,5 @@ export class AbstractSchema {
 
     @Prop({ type: SchemaTypes.ObjectId })
     @Field(() => ID)
-    _id: Types.ObjectId;
+    _id: Types.ObjectId;    
 }

@@ -32,11 +32,6 @@ export abstract class MongoRespository<T extends AbstractSchema> {
     async findOne(filterQuery: FilterQuery<T>): Promise<T> {
         const document = await this.model.findOne(filterQuery, {}, { lean: true });
 
-        if (!document) {
-            this.logger.warn('Document not found with filterQuery: %o', filterQuery);
-            throw new NotFoundException('Document not found');
-        }
-
         return document as unknown as T;
     }
 
